@@ -4,10 +4,8 @@ import java.util.*;
 
 public class Levenshtein {
     private HashMap<String, LinkedList<String>> MAP;
-    private HashMap<String, LinkedList<String>> PATHS;
-    private LinkedList<String> Path = new LinkedList<>();
+    private HashMap<String, LinkedList<String>> PATHS = new HashMap<>();
     private String START, END;
-    private long StartTime, EndTime, Runtime;
     private int MAP_SIZE = 0;
 
     private LinkedList<String> Q = new LinkedList<>();
@@ -40,22 +38,43 @@ public class Levenshtein {
     public void Run() {
         //Sets a start, and an end goal
         PromptNewStrings();
-        StartTime = System.currentTimeMillis();
+
+        //Setup default path
+        LinkedList<String> tempList = new LinkedList<>(); tempList.add(START);
+        PATHS.put(START, tempList);
+
+        long startTime = System.currentTimeMillis();
 
         //Temp
         Q.add(START); J.add(START);
         while (!Q.get(0).equals(END)) {
-            Path = MAP.get(Q.get(0));
-            for (int i = 0; i < Path.size(); i++) {
-                if (J.add(Path.get(i))) { Q.add(Path.get(i)); }
+            updatePaths(Q.get(0));
+
+            //Adds to que
+            tempList = MAP.get(Q.get(0));
+            for (int i = 0; i < tempList.size(); i++) {
+                if (J.add(tempList.get(i))) { Q.add(tempList.get(i)); }
             }
-            Path.clear(); Q.remove(0);
+            tempList.clear(); Q.remove(0);
             MAP_SIZE++;
-        } EndTime = System.currentTimeMillis();
-        Runtime = EndTime-StartTime;
+        }
+        long runtime = System.currentTimeMillis() - startTime;
 
         System.out.println("Map size: "+MAP_SIZE);
-        System.out.println("Runtime: "+Runtime+"ms");
+        System.out.println("Runtime: "+ runtime +"ms");
+        System.out.println("Path: "+PATHS.get(Q.get(0)));
+    }
+
+    private void updatePaths(String s) {
+        //Temp list
+        LinkedList<String> list1 = MAP.get(s), list2;
+
+        //Fill the Paths
+        for (int i = 0; i < list1.size(); i++) {
+            list2 = PATHS.get(list1);
+            list2.add(list1.get(i));
+            MAP.put(list1.get(i), list2);
+        }
     }
 
     private void PromptNewStrings() {
