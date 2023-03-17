@@ -3,9 +3,15 @@ import java.io.File;
 import java.util.*;
 
 public class Levenshtein {
-    public HashMap<String, LinkedList<String>> MAP;
-    public LinkedList<String> Path = new LinkedList<>();
-    public String START, END;
+    private HashMap<String, LinkedList<String>> MAP;
+    private HashMap<String, LinkedList<String>> PATHS;
+    private LinkedList<String> Path = new LinkedList<>();
+    private String START, END;
+    private long StartTime, EndTime, Runtime;
+    private int MAP_SIZE = 0;
+
+    private LinkedList<String> Q = new LinkedList<>();
+    private HashSet<String> J = new HashSet<>();
 
     Levenshtein() throws FileNotFoundException {
         //Fill the MAP
@@ -22,25 +28,37 @@ public class Levenshtein {
             while (Temp.hasNext()) { tempList.add(Temp.next()); }
 
             MAP.put(key,tempList);
-            //System.out.println(MAP.get(key));
 
-            if (i % 37000 == 0) {
-                System.out.println(i/3700+"%");
+            if (i % 72000 == 0) {
+                System.out.println(i/3600+"%");
             }
         }
         System.out.println("Map is filled\n");
     }
 
-    private void Main() throws FileNotFoundException {
-        Levenshtein lev = new Levenshtein();
+    //Returns true if a path exists
+    public void Run() {
+        //Sets a start, and an end goal
+        PromptNewStrings();
+        StartTime = System.currentTimeMillis();
 
-        //Get a new START and END
+        //Temp
+        Q.add(START); J.add(START);
+        while (!Q.get(0).equals(END)) {
+            Path = MAP.get(Q.get(0));
+            for (int i = 0; i < Path.size(); i++) {
+                if (J.add(Path.get(i))) { Q.add(Path.get(i)); }
+            }
+            Path.clear(); Q.remove(0);
+            MAP_SIZE++;
+        } EndTime = System.currentTimeMillis();
+        Runtime = EndTime-StartTime;
 
+        System.out.println("Map size: "+MAP_SIZE);
+        System.out.println("Runtime: "+Runtime+"ms");
     }
 
-
-
-    public void PromptNewStrings() {
+    private void PromptNewStrings() {
         Scanner input = new Scanner(System.in);
         System.out.print("Start: "); START = input.next().toLowerCase();
         System.out.print("End: "); END = input.next().toLowerCase();
@@ -49,10 +67,6 @@ public class Levenshtein {
         if (!MAP.containsKey(START) || !MAP.containsKey(END)) {
             System.out.println("ONE OF THE WORDS IS NOT REAL!");
         }
-    }
-
-    public LinkedList<String> GetList(String j) { //used in trying to figure out problem
-        return MAP.get(j);
     }
 
     private int levDis(char[] s1, char[] s2) {
