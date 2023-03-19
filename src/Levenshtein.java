@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.File;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class Levenshtein {
@@ -40,25 +41,31 @@ public class Levenshtein {
         PromptNewStrings();
 
         //Setup default path
-        LinkedList<String> tempList = new LinkedList<>(); tempList.add(START);
+        LinkedList<String> tempList;
+
+        //Sets up default path
+        tempList = new LinkedList<>(); tempList.add(START);
         PATHS.put(START, tempList);
+        updatePaths(START);
 
         long startTime = System.currentTimeMillis();
 
         //Temp
         Q.add(START); J.add(START);
         while (!Q.get(0).equals(END)) {
-            updatePaths(Q.get(0));
-
             //Adds to que
             tempList = MAP.get(Q.get(0));
             for (int i = 0; i < tempList.size(); i++) {
-                if (J.add(tempList.get(i))) { Q.add(tempList.get(i)); }
+                if (J.add(tempList.get(i))) {
+                    Q.add(tempList.get(i));
+                    updatePaths(tempList.get(i));
+                }
             }
             tempList.clear(); Q.remove(0);
             MAP_SIZE++;
         }
         long runtime = System.currentTimeMillis() - startTime;
+
 
         System.out.println("Map size: "+MAP_SIZE);
         System.out.println("Runtime: "+ runtime +"ms");
@@ -66,14 +73,12 @@ public class Levenshtein {
     }
 
     private void updatePaths(String s) {
-        //Temp list
-        LinkedList<String> list1 = MAP.get(s), list2;
+        LinkedList<String> list = MAP.get(s);
 
-        //Fill the Paths
-        for (int i = 0; i < list1.size(); i++) {
-            list2 = PATHS.get(list1);
-            list2.add(list1.get(i));
-            MAP.put(list1.get(i), list2);
+        for (int i = 0; i < list.size(); i++) {
+            LinkedList<String> previousPath = new LinkedList<>(PATHS.get(s));
+            previousPath.add(list.get(i));
+            PATHS.put(list.get(i), previousPath);
         }
     }
 
