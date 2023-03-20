@@ -7,7 +7,7 @@ public class Main {
         final String s1 = "monkey", s2 = "business";
         final boolean ShowPrints = true;
         final boolean RunOption = true;
-        final int loopAmount = 5000;
+        final int loopAmount = 500;
 
         //for avg score
         double timeInMS = 0;

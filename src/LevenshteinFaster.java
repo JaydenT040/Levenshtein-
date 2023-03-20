@@ -7,7 +7,7 @@ public class LevenshteinFaster {
     private HashMap<String, ArrayList<String>> PATHS = new HashMap<>();
     private boolean ShowPrints;
     private String START, END;
-    private int MAP_SIZE;
+    private int MAP_SIZE, stepsTaken = 0;
 
     private LinkedList<String> Q;
     private HashSet<String> NO_LOOPS;
@@ -83,7 +83,7 @@ public class LevenshteinFaster {
         }
 
         //Sort
-        List<Map.Entry<String,Integer>> list = new LinkedList<>(Transitions.entrySet());
+        List<Map.Entry<String,Integer>> list = new ArrayList<>(Transitions.entrySet());
         Collections.sort(list, Map.Entry.comparingByValue());
         LinkedHashMap<String,Integer> OrderedMap = new LinkedHashMap<>();
 
@@ -104,13 +104,6 @@ public class LevenshteinFaster {
             ArrayList<String> previousPath = new ArrayList<>(PATHS.get(s));
             previousPath.add(list.get(i));
             PATHS.put(list.get(i), previousPath);
-        }
-    }
-
-    private void TestNewStrings() {
-        //Makes sure that START and END both exist as words
-        if (!MAP.containsKey(START) || !MAP.containsKey(END)) {
-            System.out.println("ONE OF THE WORDS IS NOT REAL!");
         }
     }
 
