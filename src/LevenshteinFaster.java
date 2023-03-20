@@ -7,10 +7,10 @@ public class LevenshteinFaster {
     private HashMap<String, ArrayList<String>> PATHS = new HashMap<>();
     private boolean ShowPrints;
     private String START, END;
-    private int MAP_SIZE = 0;
+    private int MAP_SIZE;
 
-    private LinkedList<String> Q = new LinkedList<>();
-    private HashSet<String> NO_LOOPS = new HashSet<>();
+    private LinkedList<String> Q;
+    private HashSet<String> NO_LOOPS;
 
     LevenshteinFaster(String s1, String s2, boolean ShowPrints) throws FileNotFoundException {
         //Fill the MAP
@@ -41,10 +41,12 @@ public class LevenshteinFaster {
 
     //Returns true if a path exists
     public double Run() {
+        Q = new LinkedList<>();
+        NO_LOOPS = new HashSet<>();
+        MAP_SIZE = 0;
+
         //Setup default path
         ArrayList<String> tempList;
-
-        //Sets up default path
         tempList = new ArrayList<>(); tempList.add(START);
         PATHS.put(START, tempList);
         updatePaths(START);
@@ -64,7 +66,6 @@ public class LevenshteinFaster {
         if (ShowPrints) {
             System.out.println("Map size: " + MAP_SIZE);
             System.out.println("Runtime: " + runtime + "ms");
-            System.out.println("Path: " + PATHS.get(Q.get(0)));
         }
 
         return runtime;
@@ -83,7 +84,7 @@ public class LevenshteinFaster {
 
         //Sort
         List<Map.Entry<String,Integer>> list = new LinkedList<>(Transitions.entrySet());
-        Collections.sort(list, Comparator.comparing(Map.Entry::getValue));
+        Collections.sort(list, Map.Entry.comparingByValue());
         LinkedHashMap<String,Integer> OrderedMap = new LinkedHashMap<>();
 
         for (Map.Entry<String,Integer> entry : list) {
@@ -133,5 +134,8 @@ public class LevenshteinFaster {
             prev = curr;
         }
         return prev[ s2.length ];
+    }
+    public ArrayList<String> GetPath() {
+        return PATHS.get(END);
     }
 }
