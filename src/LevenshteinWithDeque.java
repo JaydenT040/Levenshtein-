@@ -1,17 +1,17 @@
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.File;
 import java.util.*;
 
-public class LevenshteinFaster {
+public class LevenshteinWithDeque {
     private final HashMap<String, ArrayList<String>> MAP;
     private final HashMap<String, ArrayList<String>> PATHS = new HashMap<>();
     private final boolean ShowPrints;
     private final String START, END;
 
-    private LinkedList<String> Q;
+    private Deque<String> DQ;
     private HashSet<String> NO_LOOPS;
 
-    LevenshteinFaster(String s1, String s2, boolean ShowPrints) throws FileNotFoundException {
+    LevenshteinWithDeque(String s1, String s2, boolean ShowPrints) throws FileNotFoundException {
         //Fill the MAP
         MAP = new HashMap<>();
         if (ShowPrints) { System.out.println("Filling map"); }
@@ -39,28 +39,31 @@ public class LevenshteinFaster {
     }
 
     public double Run() {
-        Q = new LinkedList<>();
+        //Setup variables
         NO_LOOPS = new HashSet<>();
+        DQ = new ArrayDeque<>();
         int MAP_SIZE = 0;
 
+        NO_LOOPS.add(START);
+        DQ.add(START);
+
         //Setup default path
-        ArrayList<String> tempList;
-        tempList = new ArrayList<>(); tempList.add(START);
-        PATHS.put(START, tempList);
-        updatePaths(START);
+        ArrayList<String> AList = new ArrayList<>(); AList.add(START);
+        PATHS.put(START,AList);
 
-        long startTime = System.currentTimeMillis();
+        //Starts timer
+        long StartTime = System.currentTimeMillis();
 
-        //Adds to que
-        Q.add(START); NO_LOOPS.add(START);
-        while (!Q.get(0).equals(END)) {
-            //Adds to que
+        //Runs until END is found
+        while (!DQ.getLast().equals(END)) {
             Scan();
-            Q.remove(0);
             MAP_SIZE++;
         }
-        double runtime = System.currentTimeMillis() - startTime;
 
+        //Stops timer
+        long runtime = System.currentTimeMillis() - StartTime;
+
+        //prints to screen
         if (ShowPrints) {
             System.out.println("Map size: " + MAP_SIZE);
             System.out.println("Runtime: " + runtime + "ms");
@@ -70,37 +73,22 @@ public class LevenshteinFaster {
     }
 
     private void Scan() {
-        Map<String, Integer> Transitions = new TreeMap<>();
+        //Creates a map that holds the word and its edit distance from END
+        Map<String,Integer> Transitions = new TreeMap<>();
 
-        //fill map
-        for (String k : MAP.get(Q.get(0))) {
-            if (NO_LOOPS.add(k)) {
-                Transitions.put(k,levDis(k.toCharArray(), END.toCharArray()));
-                updatePaths(k);
+        //Fills said map
+        for (String word : MAP.get(DQ.getLast())) {
+            if (NO_LOOPS.add(word)) {
+                Transitions.put(word,levDis(word.toCharArray(),END.toCharArray()));
             }
         }
-
-        //Sort
-        List<Map.Entry<String,Integer>> list = new ArrayList<>(Transitions.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-        LinkedHashMap<String,Integer> OrderedMap = new LinkedHashMap<>();
-
-        for (Map.Entry<String,Integer> entry : list) {
-            OrderedMap.put(entry.getKey(), entry.getValue());
-        }
-
-        //Add to que
-        Q.addAll(OrderedMap.keySet());
     }
 
-    private void updatePaths(String s) {
-        ArrayList<String> list = MAP.get(s);
+    private void updatePaths(String s1, String s2) {
+        ArrayList<String> list = MAP.get(s1);
 
-        for (String value : list) {
-            ArrayList<String> previousPath = new ArrayList<>(PATHS.get(s));
-            previousPath.add(value);
-            PATHS.put(value, previousPath);
-        }
+        list.add(s2);
+        PATHS.put(s2,list);
     }
 
     private int levDis(char[] s1, char[] s2) {
@@ -124,7 +112,5 @@ public class LevenshteinFaster {
         }
         return prev[ s2.length ];
     }
-    public ArrayList<String> GetPath() {
-        return PATHS.get(END);
-    }
+    public ArrayList<String> GetPath() { return PATHS.get(END); }
 }

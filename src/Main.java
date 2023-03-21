@@ -22,10 +22,11 @@ public class Main {
             }
             Path = lev.GetPath();
         } else {
+            LevenshteinWithDeque lev2 = new LevenshteinWithDeque(s1,s2,ShowPrints);
             for (int i = 0; i < loopAmount; i++) {
-                Levenshtein lev2 = new Levenshtein(s1,s2,ShowPrints);
                 timeInMS += lev2.Run();
             }
+            Path = lev2.GetPath();
         }
 
 
