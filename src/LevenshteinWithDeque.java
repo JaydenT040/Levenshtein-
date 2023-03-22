@@ -56,6 +56,9 @@ public class LevenshteinWithDeque {
 
         //Runs until END is found
         while (!DQ.getLast().equals(END)) {
+            if (DQ.equals("cat")) {
+                System.out.println("YIPEE"); System.exit(0);
+            }
             Scan();
             MAP_SIZE++;
         }
@@ -77,18 +80,43 @@ public class LevenshteinWithDeque {
         Map<String,Integer> Transitions = new TreeMap<>();
 
         //Fills said map
+        int levValue; boolean temp = false;
         for (String word : MAP.get(DQ.getLast())) {
             if (NO_LOOPS.add(word)) {
-                Transitions.put(word,levDis(word.toCharArray(),END.toCharArray()));
+                levValue = levDis(word.toCharArray(), END.toCharArray());
+
+                //Checks to see if END is found
+                if (levValue == 0) { System.out.println("END IS FOUND"); temp = true; System.exit(0);}
+                Transitions.put(word,levValue);
             }
         }
+
+        //Removes the used element & add to path
+        updatePaths(DQ.removeLast());
+
+        //Sorts the map
+        List<Map.Entry<String,Integer>> list = new ArrayList<>(Transitions.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+        LinkedHashMap<String,Integer> OrderedMap = new LinkedHashMap<>();
+
+        for (Map.Entry<String,Integer> entry : list) {
+            OrderedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        //TEMP FIX LATER
+        ArrayList<String> LIST = new ArrayList<>();
+        for (String FF : OrderedMap.keySet()) { LIST.add(FF); }
+        for (int i = LIST.size()-1; i > 0; i--) { DQ.add(LIST.get(i)); }
     }
 
-    private void updatePaths(String s1, String s2) {
-        ArrayList<String> list = MAP.get(s1);
+    private void updatePaths(String s) {
+        ArrayList<String> list = MAP.get(s);
 
-        list.add(s2);
-        PATHS.put(s2,list);
+        for (String value : list) {
+            ArrayList<String> previousPath = new ArrayList<>(PATHS.get(s));
+            previousPath.add(value);
+            PATHS.put(value, previousPath);
+        }
     }
 
     private int levDis(char[] s1, char[] s2) {

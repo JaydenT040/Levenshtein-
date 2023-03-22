@@ -6,7 +6,7 @@ public class Main {
         //finals
         final String s1 = "monkey", s2 = "business";
         final boolean ShowPrints = true;
-        final boolean RunOption = true;
+        final boolean RunOption = false;
         final int loopAmount = 500;
 
         //for avg score
