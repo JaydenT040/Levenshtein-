@@ -44,8 +44,8 @@ public class LevenshteinFaster {
         int MAP_SIZE = 0;
 
         //Setup default path
-        ArrayList<String> tempList;
-        tempList = new ArrayList<>(); tempList.add(START);
+        ArrayList<String> tempList = new ArrayList<>();
+        tempList.add(START);
         PATHS.put(START, tempList);
         updatePaths(START);
 

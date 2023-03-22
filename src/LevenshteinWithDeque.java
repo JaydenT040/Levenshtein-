@@ -11,6 +11,10 @@ public class LevenshteinWithDeque {
     private Deque<String> DQ;
     private HashSet<String> NO_LOOPS;
 
+    /*
+    NOTE: This was a test to see how it would work, and it is very slow, I will come back and revisit later.
+     */
+
     LevenshteinWithDeque(String s1, String s2, boolean ShowPrints) throws FileNotFoundException {
         //Fill the MAP
         MAP = new HashMap<>();
